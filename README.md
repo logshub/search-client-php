@@ -19,7 +19,7 @@ PHP language, and we decided to create this connector to speed up integration.
 
 ### Example
 
-```
+```php
 <?php
 include_once 'vendor/autoload.php';
 
@@ -60,7 +60,7 @@ apisecret = "ZJLnvZAujIBOTiJVyfImZYLEKdesJPKUntfFztYLiefQsCMgmd"
 
 Indexing
 
-```
+```sh
 php bin/logshub-search index \
 --config /etc/logshub-search.ini \
 --id 4 \
@@ -70,7 +70,7 @@ php bin/logshub-search index \
 
 Searching
 
-```
+```sh
 php bin/logshub-search search \
 --config /etc/logshub-search.ini \
 --query "laptop"
@@ -78,8 +78,12 @@ php bin/logshub-search search \
 
 Indexing CSV file
 
-```
+```sh
 bin/logshub-search index:csv \
 --config /etc/logshub-search.ini \
 --csv /home/greg/products.csv
 ```
+
+### Licence
+
+MIT
