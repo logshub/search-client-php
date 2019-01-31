@@ -1,0 +1,15 @@
+#!/usr/bin/env php
+<?php
+
+foreach (array(__DIR__ . '/../../../autoload.php', __DIR__ . '/../../vendor/autoload.php', __DIR__ . '/../vendor/autoload.php') as $file) {
+    if (file_exists($file)) {
+        require $file;
+        break;
+    }
+}
+
+$app = new \Symfony\Component\Console\Application();
+$app->add(new \Logshub\Search\Command\SearchCommand());
+$app->add(new \Logshub\Search\Command\IndexCommand());
+$app->add(new \Logshub\Search\Command\IndexCsvCommand());
+$app->run();

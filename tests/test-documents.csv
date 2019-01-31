@@ -1,0 +1,3 @@
+id,name,url,url_image,price,price_old,currency,description,categories,sku
+1,Test Product,/test-product,/test-product.jpg,12,15,USD,,"Books|Other category",ASD-123
+2,Other Product,/other-product,/other-product.jpg,13,19,USD,,"Books|Other category",ASD-124
