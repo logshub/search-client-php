@@ -61,7 +61,7 @@ apisecret = "ZJLnvZAujIBOTiJVyfImZYLEKdesJPKUntfFztYLiefQsCMgmd"
 Indexing
 
 ```sh
-php bin/logshub-search index \
+php vendor/bin/logshub-search index \
 --config /etc/logshub-search.ini \
 --id 4 \
 --name "Laptop for gaming asus" \
@@ -71,7 +71,7 @@ php bin/logshub-search index \
 Searching
 
 ```sh
-php bin/logshub-search search \
+php vendor/bin/logshub-search search \
 --config /etc/logshub-search.ini \
 --query "laptop"
 ```
@@ -79,7 +79,7 @@ php bin/logshub-search search \
 Indexing CSV file
 
 ```sh
-bin/logshub-search index:csv \
+php vendor/bin/logshub-search index:csv \
 --config /etc/logshub-search.ini \
 --csv /home/greg/products.csv
 ```
