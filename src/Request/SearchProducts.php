@@ -20,11 +20,23 @@ class SearchProducts implements RequestInterface
      */
     protected $features;
 
-    public function __construct($pubKey, $query, $features = 'products,aggcategories')
+    /**
+     * @var int
+     */
+    protected $limit;
+
+    /**
+     * @var int
+     */
+    protected $limitCategories;
+
+    public function __construct($pubKey, $query, $features = 'products,aggcategories', $limit = 10, $limitCategories = 2)
     {
         $this->pubKey = $pubKey;
         $this->query = $query;
         $this->features = $features;
+        $this->limit = $limit;
+        $this->limitCategories = $limitCategories;
     }
 
     public function isValid()
@@ -38,6 +50,8 @@ class SearchProducts implements RequestInterface
             'pub_key' => $this->pubKey,
             'q' => $this->query,
             'features' => $this->features,
+            'limit' => $this->limit,
+            'limit_cat' => $this->limitCategories,
         ];
 
         $res = $client->getHttpClient()->request('GET', $client->getUrl() . '/v1/products/search?' . http_build_query($params), []);

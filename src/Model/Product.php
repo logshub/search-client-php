@@ -1,7 +1,7 @@
 <?php
 namespace Logshub\SearchClient\Model;
 
-class Product
+class Product extends SendableAbstract
 {
     protected $id;
     protected $name;
@@ -34,11 +34,11 @@ class Product
     }
     public function getId()
     {
-        return $this->id;
+        return $this->clear($this->id);
     }
     public function getName()
     {
-        return $this->name;
+        return $this->clear($this->name);
     }
     public function getUrl()
     {
@@ -58,7 +58,7 @@ class Product
     }
     public function getDescription()
     {
-        return $this->description;
+        return $this->clear($this->description);
     }
     public function getCategories()
     {

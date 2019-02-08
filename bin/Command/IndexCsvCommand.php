@@ -22,6 +22,8 @@ class IndexCsvCommand extends Command
             ->setDescription("Index documents from CSV file into logshub.com search service")
             ->addOption('config', 'c', InputOption::VALUE_REQUIRED, 'Path to INI file with logshub configuration', null)
             ->addOption('csv', null, InputOption::VALUE_REQUIRED, 'Path to CSV file with products', null)
+            ->addOption('csv-separator', null, InputOption::VALUE_OPTIONAL, 'CSV separator, comma by default', ',')
+            ->addOption('batch-size', null, InputOption::VALUE_OPTIONAL, 'Batch size, 10 by default', 10)
             ->addOption('secure', null, InputOption::VALUE_OPTIONAL, 'Whether connection should be secure. No changes recommended', true)
             ->addOption('domain', null, InputOption::VALUE_OPTIONAL, 'Logshub search API domain without location. No changes recommended', 'apisearch.logshub.com')
             ->addOption('categories', null, InputOption::VALUE_NONE, 'Flag whether to import as categories');
@@ -35,6 +37,8 @@ class IndexCsvCommand extends Command
 
         $config = $input->getOption('config');
         $csv = $input->getOption('csv');
+        $csvSeparator = $input->getOption('csv-separator');
+        $batchSize = (int)$input->getOption('batch-size');
         $isCategoriesImport = (bool)$input->getOption('categories');
 
         $configuration = $this->parseConfig($config);
@@ -47,7 +51,7 @@ class IndexCsvCommand extends Command
             return self::printError($output, 'Unable to read CSV file');
         }
         $counter = 0;
-        while (($csvRow = fgetcsv($handle, 1000, ",")) !== false) {
+        while (($csvRow = fgetcsv($handle, 0, $csvSeparator)) !== false) {
             $counter++;
             // header
             if ($counter === 1) {
@@ -55,8 +59,8 @@ class IndexCsvCommand extends Command
             }
             $row = new Row($csvRow);
             $this->enqueue($row, $isCategoriesImport, $output);
-            // real sending will be every 10th document
-            if ($counter % 10 === 0) {
+            // real sending will be every Xth document
+            if ($counter % $batchSize === 0) {
                 $this->sendEnqueued($client, $configuration['serviceid'], $isCategoriesImport, $counter, $output);
             }
         }
