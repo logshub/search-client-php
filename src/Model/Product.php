@@ -28,6 +28,22 @@ class Product extends SendableAbstract
         }
     }
 
+    public function addCategory($name)
+    {
+        $this->categories[] = $name;
+    }
+
+    public function setName($name)
+    {
+        $name = $this->clear($name);
+        if ($name) {
+            // cutting name, as more than 130 chars are not allowed
+            $name = substr($name, 0, 130);
+        }
+
+        $this->name = $name;
+    }
+
     public function isValid()
     {
         return $this->getId() && $this->getName();
@@ -36,12 +52,28 @@ class Product extends SendableAbstract
     {
         return $this->clear($this->id);
     }
+    /**
+     * TODO: the same code as setter
+     */
     public function getName()
     {
-        return $this->clear($this->name);
+        $name = $this->clear($this->name);
+        if ($name) {
+            // cutting name, as more than 130 chars are not allowed
+            $name = substr($name, 0, 130);
+        }
+
+        return $name;
     }
     public function getUrl()
     {
+        if (!$this->url) {
+            return '';
+        }
+        if (substr($this->url, 0, 1) !== '/' && substr($this->url, 0, 4) !== 'http') {
+            return '/' . $this->url;
+        }
+
         return $this->url;
     }
     public function getPrice()

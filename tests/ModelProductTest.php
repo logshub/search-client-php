@@ -18,9 +18,13 @@ final class ModelProductTest extends \PHPUnit\Framework\TestCase
             'name' => 'Gaming Laptop',
             'price' => 123
         ]);
+        $product->addCategory('Test Category');
+        $product->addCategory('Test Category 2');
+
         $this->assertEquals(1, $product->getId());
         $this->assertEquals('Gaming Laptop', $product->getName());
         $this->assertEquals(123, $product->getPrice());
+        $this->assertEquals(2, count($product->getCategories()));
         $this->assertEquals(true, is_array($product->toApiArray()));
     }
 }

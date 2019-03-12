@@ -19,9 +19,10 @@ abstract class SendableAbstract
      */
     public function clear($value)
     {
+        $defaultCharsToRemove = ['"', "'", '`', '<', '>', '–', '´', '™', '®'];
         return \strip_tags(\str_replace(
-            ['"', "'", '`', '<', '>', '–'],
-            ['','','','','',''],
+            $defaultCharsToRemove,
+            array_fill(0, count($defaultCharsToRemove), ''),
             $value
         ));
     }
