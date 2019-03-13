@@ -6,7 +6,7 @@ PHP language, and we decided to create this connector to speed up integration.
 
 ### Requirements
 
-* PHP 5.5+, 7.0+
+* PHP 5.5+, 7+
 * composer - https://getcomposer.org/
 
 ### Installation
