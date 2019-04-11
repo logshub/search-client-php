@@ -44,7 +44,7 @@ class File
         return $this->serviceId;
     }
     
-    public function getApihash()
+    public function getApiHash()
     {
         return $this->apiHash;
     }
@@ -69,7 +69,7 @@ class File
         return [
             'serviceid' => $this->getServiceId(),
             'location' => $this->getLocation(),
-            'apihash' => $this->getApihash(),
+            'apihash' => $this->getApiHash(),
             'apisecret' => $this->getApiSecret(),
             'pub_key' => $this->getPubKey(),
         ];

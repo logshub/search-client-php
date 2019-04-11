@@ -16,7 +16,7 @@ final class ConfigFileTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('vclkaVL', $confArray['pub_key']);
 
         $this->assertEquals('f4058cb4-e2e1-4eaf-69b2-742374436731', $config->getServiceId());
-        $this->assertEquals('ZQdzxcIZgb', $config->getApihash());
+        $this->assertEquals('ZQdzxcIZgb', $config->getApiHash());
         $this->assertEquals('uk01', $config->getLocation());
         $this->assertEquals('lOsQwdwyMZQYJqfVUJtyhsnrlZTQkiQwfCnAPcypBEXSifSkqi', $config->getApiSecret());
         $this->assertEquals('vclkaVL', $config->getPubKey());

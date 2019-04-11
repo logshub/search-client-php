@@ -12,6 +12,11 @@ use Logshub\SearchClient\Client;
 
 class SearchCommand extends Command
 {
+    /**
+     * @var \Logshub\SearchClient\Config\File
+     */
+    protected $config;
+    
     protected function configure()
     {
         $this->setName("search")
@@ -28,17 +33,11 @@ class SearchCommand extends Command
             return;
         }
 
-        $config = $input->getOption('config');
-        $query = $input->getOption('query');
-
-        $configuration = $this->parseConfig($config);
-        if (!$configuration) {
-            return self::printError($output, 'Configuration file is not valid');
-        }
-        $client = $this->getClient($input, $configuration);
+        $this->config = new \Logshub\SearchClient\Config\File($input->getOption('config'));
+        $client = $this->getClient($input);
         $request = new \Logshub\SearchClient\Request\SearchProducts(
-            $configuration['pub_key'],
-            $query,
+            $this->config->getPubKey(),
+            $input->getOption('query'),
             'products,categories,aggcategories'
         );
         $response = $client->searchProducts($request);
@@ -67,30 +66,9 @@ class SearchCommand extends Command
         $table->render();
     }
 
-    /**
-     * @return array|false
-     */
-    protected function parseConfig($configFilePath)
-    {
-        $config = \parse_ini_file($configFilePath);
-        if (empty($config['pub_key'])) {
-            return false;
-        }
-
-        return $config;
-    }
-
     protected function isValid(InputInterface $input, OutputInterface $output)
     {
-        $config = $input->getOption('config');
         $query = $input->getOption('query');
-
-        if (!\is_file($config)) {
-            return self::printError($output, 'Config file does not exists');
-        }
-        if (!\is_readable($config)) {
-            return self::printError($output, 'Config file is not readable');
-        }
         if (!$query) {
             return self::printError($output, 'Query is not vailid');
         }
@@ -98,18 +76,18 @@ class SearchCommand extends Command
         return true;
     }
 
-    protected function getClient(InputInterface $input, array $configuration)
+    protected function getClient(InputInterface $input)
     {
         $httpClient = new \GuzzleHttp\Client([
             'verify' => (bool)$input->getOption('secure')
         ]);
-        $url = 'https://' . $configuration['location'] . '.' . $input->getOption('domain');
+        $url = 'https://' . $this->config->getLocation() . '.' . $input->getOption('domain');
 
         return new Client(
             $httpClient,
             $url,
-            $configuration['apihash'],
-            $configuration['apisecret']
+            $this->config->getApiHash(),
+            $this->config->getApiSecret()
         );
     }
 

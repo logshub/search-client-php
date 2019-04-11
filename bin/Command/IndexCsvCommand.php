@@ -11,6 +11,10 @@ use Logshub\SearchClient\Csv\Row;
 class IndexCsvCommand extends Command
 {
     /**
+     * @var \Logshub\SearchClient\Config\File
+     */
+    protected $config;
+    /**
      * Queue of documents to send
      * @var array
      */
@@ -31,42 +35,28 @@ class IndexCsvCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        if (!$this->isValid($input, $output)) {
-            return;
-        }
-
-        $config = $input->getOption('config');
-        $csv = $input->getOption('csv');
-        $csvSeparator = $input->getOption('csv-separator');
         $batchSize = (int)$input->getOption('batch-size');
         $isCategoriesImport = (bool)$input->getOption('categories');
 
-        $configuration = $this->parseConfig($config);
-        if (!$configuration) {
-            return self::printError($output, 'Configuration file is not valid');
-        }
-        $client = $this->getClient($input, $configuration);
+        $this->config = new \Logshub\SearchClient\Config\File($input->getOption('config'));
+        $csv = new \Logshub\SearchClient\Csv\File(
+            $input->getOption('csv'),
+            $input->getOption('csv-separator')
+        );
+        $client = $this->getClient($input);
 
-        if (($handle = fopen($csv, "r")) === false) {
-            return self::printError($output, 'Unable to read CSV file');
-        }
         $counter = 0;
-        while (($csvRow = fgetcsv($handle, 0, $csvSeparator)) !== false) {
+        $rows = $csv->getRows();
+        foreach ($rows as $row){
             $counter++;
-            // header
-            if ($counter === 1) {
-                continue;
-            }
-            $row = new Row($csvRow);
             $this->enqueue($row, $isCategoriesImport, $output);
             // real sending will be every Xth document
             if ($counter % $batchSize === 0) {
-                $this->sendEnqueued($client, $configuration['serviceid'], $isCategoriesImport, $counter, $output);
+                $this->sendEnqueued($client, $this->config->getServiceId(), $isCategoriesImport, $counter, $output);
             }
         }
-        fclose($handle);
         // make sure that all the products are sent
-        $this->sendEnqueued($client, $configuration['serviceid'], $isCategoriesImport, $counter, $output);
+        $this->sendEnqueued($client, $this->config->getServiceId(), $isCategoriesImport, $counter, $output);
     }
 
     protected function enqueue(Row $row, $isCategoriesImport, OutputInterface $output)
@@ -102,52 +92,18 @@ class IndexCsvCommand extends Command
         $this->documentsToSend = [];
     }
 
-    /**
-     * @return array|false
-     */
-    protected function parseConfig($configFilePath)
-    {
-        $config = \parse_ini_file($configFilePath);
-        if (empty($config['serviceid']) || empty($config['location']) || empty($config['apihash']) || empty($config['apisecret'])) {
-            return false;
-        }
-
-        return $config;
-    }
-
-    protected function isValid(InputInterface $input, OutputInterface $output)
-    {
-        $config = $input->getOption('config');
-        $csv = $input->getOption('csv');
-
-        if (!\is_file($config)) {
-            return self::printError($output, 'Config file does not exists');
-        }
-        if (!\is_readable($config)) {
-            return self::printError($output, 'Config file is not readable');
-        }
-        if (!\is_file($csv)) {
-            return self::printError($output, 'CSV file does not exists');
-        }
-        if (!\is_readable($csv)) {
-            return self::printError($output, 'CSV file is not readable');
-        }
-
-        return true;
-    }
-
-    protected function getClient(InputInterface $input, array $configuration)
+    protected function getClient(InputInterface $input)
     {
         $httpClient = new \GuzzleHttp\Client([
             'verify' => (bool)$input->getOption('secure')
         ]);
-        $url = 'https://' . $configuration['location'] . '.' . $input->getOption('domain');
+        $url = 'https://' . $this->config->getLocation() . '.' . $input->getOption('domain');
 
         return new Client(
             $httpClient,
             $url,
-            $configuration['apihash'],
-            $configuration['apisecret']
+            $this->config->getApiHash(),
+            $this->config->getApiSecret()
         );
     }
 

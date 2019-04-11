@@ -11,6 +11,11 @@ use Logshub\SearchClient\Client;
 
 class IndexCommand extends Command
 {
+    /**
+     * @var \Logshub\SearchClient\Config\File
+     */
+    protected $config;
+
     protected function configure()
     {
         // TODO: other product fields
@@ -30,22 +35,18 @@ class IndexCommand extends Command
             return;
         }
 
-        $config = $input->getOption('config');
         $id = $input->getOption('id');
         $name = $input->getOption('name');
         $price = $input->getOption('price');
 
-        $configuration = $this->parseConfig($config);
-        if (!$configuration) {
-            return self::printError($output, 'Configuration file is not valid');
-        }
-        $client = $this->getClient($input, $configuration);
+        $this->config = new \Logshub\SearchClient\Config\File($input->getOption('config'));
+        $client = $this->getClient($input);
 
         $product = new \Logshub\SearchClient\Model\Product($id, [
             'name' => $name,
             'price' => $price
         ]);
-        $request = new \Logshub\SearchClient\Request\IndexProducts($configuration['serviceid'], [
+        $request = new \Logshub\SearchClient\Request\IndexProducts($this->config->getServiceId(), [
             $product
         ]);
         $response = $client->indexProducts($request);
@@ -53,32 +54,12 @@ class IndexCommand extends Command
         $output->writeln($response->getStatusCode() . ' ' . $response->getBody());
     }
 
-    /**
-     * @return array|false
-     */
-    protected function parseConfig($configFilePath)
-    {
-        $config = \parse_ini_file($configFilePath);
-        if (empty($config['serviceid']) || empty($config['location']) || empty($config['apihash']) || empty($config['apisecret'])) {
-            return false;
-        }
-
-        return $config;
-    }
-
     protected function isValid(InputInterface $input, OutputInterface $output)
     {
-        $config = $input->getOption('config');
         $id = $input->getOption('id');
         $name = $input->getOption('name');
         $price = $input->getOption('price');
 
-        if (!\is_file($config)) {
-            return self::printError($output, 'Config file does not exists');
-        }
-        if (!\is_readable($config)) {
-            return self::printError($output, 'Config file is not readable');
-        }
         if (!$id) {
             return self::printError($output, 'Id is not vailid');
         }
@@ -92,18 +73,18 @@ class IndexCommand extends Command
         return true;
     }
 
-    protected function getClient(InputInterface $input, array $configuration)
+    protected function getClient(InputInterface $input)
     {
         $httpClient = new \GuzzleHttp\Client([
             'verify' => (bool)$input->getOption('secure')
         ]);
-        $url = 'https://' . $configuration['location'] . '.' . $input->getOption('domain');
+        $url = 'https://' . $this->config->getLocation() . '.' . $input->getOption('domain');
 
         return new Client(
             $httpClient,
             $url,
-            $configuration['apihash'],
-            $configuration['apisecret']
+            $this->config->getApiHash(),
+            $this->config->getApiSecret()
         );
     }
 
