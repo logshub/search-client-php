@@ -47,7 +47,7 @@ class IndexCsvCommand extends Command
 
         $counter = 0;
         $rows = $csv->getRows();
-        foreach ($rows as $row){
+        foreach ($rows as $row) {
             $counter++;
             $this->enqueue($row, $isCategoriesImport, $output);
             // real sending will be every Xth document

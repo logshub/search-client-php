@@ -34,7 +34,7 @@ class File
         $this->location = $config['location'];
         $this->apiHash = $config['apihash'];
         $this->apiSecret = $config['apisecret'];
-        if (!empty($config['pub_key'])){
+        if (!empty($config['pub_key'])) {
             $this->pubKey = $config['pub_key'];
         }
     }

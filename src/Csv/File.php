@@ -48,8 +48,8 @@ class File
         $counter = 0;
         while (($csvRow = fgetcsv($handle, 0, $this->csvSeparator)) !== false) {
             $counter++;
-            // header
-            if ($counter === 1) {
+            // header or empty row
+            if ($counter === 1 || empty($csvRow[0])) {
                 continue;
             }
             $rows[] = new Row($csvRow);
