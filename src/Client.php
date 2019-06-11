@@ -112,6 +112,16 @@ class Client
 
     /**
      *
+     * @param \Logshub\SearchClient\Request\DocumentPriority $request
+     * @return Response\DocumentPriority
+     */
+    public function setDocumentPriority(Request\DocumentPriority $request)
+    {
+        return $this->send($request);
+    }
+
+    /**
+     *
      * @param \Logshub\SearchClient\Request\Demo $request
      * @return Response\Demo
      */
