@@ -17,6 +17,7 @@ class Product extends SendableAbstract
     protected $reviewScore;
     protected $reviewCount;
     protected $priceOld;
+    protected $priority;
 
     public function __construct($id, array $params)
     {
@@ -119,6 +120,10 @@ class Product extends SendableAbstract
     public function getPriceOld()
     {
         return (float)$this->priceOld;
+    }
+    public function getPriority()
+    {
+        return (int)$this->priority;
     }
 
     /**

@@ -26,5 +26,7 @@ final class ModelProductTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(123, $product->getPrice());
         $this->assertEquals(2, count($product->getCategories()));
         $this->assertEquals(true, is_array($product->toApiArray()));
+        // TODO: fix it
+        // $this->assertEquals('Gaming Laptop', $product->clear("Gaming Laptop©®¶™"));
     }
 }

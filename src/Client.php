@@ -152,6 +152,16 @@ class Client
 
     /**
      *
+     * @param \Logshub\SearchClient\Request\Priorities $request
+     * @return Response\Priorities
+     */
+    public function getPriorities(Request\Priorities $request)
+    {
+        return $this->send($request);
+    }
+
+    /**
+     *
      * @param \Logshub\SearchClient\Request\RequestInterface $request
      * @return Response\ResponseAbstract
      * @throws Exception
