@@ -20,9 +20,15 @@ class Analytics implements RequestInterface
      */
     protected $dateEnd;
 
-    public function __construct($serviceId, \DateTime $dateStart = null, \DateTime $dateEnd = null)
+    /**
+     * @var int
+     */
+    protected $maxResults;
+
+    public function __construct($serviceId, \DateTime $dateStart = null, \DateTime $dateEnd = null, $maxResults = 25)
     {
         $this->serviceId = $serviceId;
+        $this->maxResults = $maxResults;
         if ($dateStart) {
             $this->dateStart = $dateStart;
         }
@@ -33,12 +39,14 @@ class Analytics implements RequestInterface
 
     public function isValid()
     {
-        return $this->serviceId;
+        return $this->serviceId && $this->maxResults <= 50;
     }
 
     public function send(\Logshub\SearchClient\Client $client)
     {
-        $params = [];
+        $params = [
+            'max_results' => $this->maxResults,
+        ];
         if ($this->dateStart) {
             // 2014-03-10T05:40:00+01:00
             $params['date_start'] = $this->dateStart->format(\DateTime::RFC3339);
