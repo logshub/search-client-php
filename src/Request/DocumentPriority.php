@@ -28,7 +28,7 @@ class DocumentPriority implements RequestInterface
     {
         $this->serviceId = $serviceId;
         $this->documentId = $documentId;
-        $this->priority = $priority;
+        $this->priority = (int)$priority;
     }
 
     /**
